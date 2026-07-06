@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+  <title>PIB NSR</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <div class="container">
+      <div class="logo-area">
+        <img src="img/logo.png" alt="PIB NSR logo" class="logo-img">
+      </div>
+      <nav class="nav-links">
+        <a href="index.html" class="active"><i class="fas fa-home"></i> <span>Início</span></a>
+        <a href="sobre.html"><i class="fas fa-info-circle"></i> <span>Sobre</span></a>
+        <a href="contato.html"><i class="fas fa-envelope"></i> <span>Contato</span></a>
+        <a href="login.html" id="authLink"><i class="fas fa-user"></i> <span id="authLinkText">Login</span></a>
+      </nav>
+      <!-- Menu hamburger para mobile (opcional) -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- CARROSSEL -->
+    <section class="hero-carousel" id="heroCarousel">
+      <div class="carousel-track" id="carouselTrack">
+        <div class="carousel-slide" style="background-image: url('img/domingo.jpg');"></div>
+        <div class="carousel-slide" style="background-image: url('img/juniores.png');"></div>
+        <div class="carousel-slide" style="background-image: url('img/adoles.png');"></div>
+        <div class="carousel-slide" style="background-image: url('img/jovens.png');"></div>
+      </div>
+      <button class="carousel-btn prev" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+      <button class="carousel-btn next" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+    </section>
+
+    <!-- Dots -->
+    <div class="carousel-controls" id="carouselDots">
+      <button class="dot active" data-index="0"></button>
+      <button class="dot" data-index="1"></button>
+      <button class="dot" data-index="2"></button>
+      <button class="dot" data-index="3"></button>
+    </div>
+
+    <div class="container">
+      <!-- PRÓXIMOS EVENTOS -->
+      <h2 class="section-title"><i class="fas fa-calendar-check"></i> Próximos eventos</h2>
+      <div class="event-grid" id="eventGrid">
+        <!-- Gerado dinamicamente pelo JavaScript -->
+      </div>
+
+      <!-- SOBRE -->
+      <div class="about-box">
+        <div class="about-text">
+          <h3><i class="fas fa-heart"></i> Sobre a PIB NSR</h3>
+          <p>Somos uma igreja acolhedora, centrada na Palavra de Deus e comprometida em transformar vidas e nossa cidade com o amor de Cristo.</p>
+        </div>
+        <a href="sobre.html" class="about-link">Saiba mais <i class="fas fa-arrow-right"></i></a>
+      </div>
+
+      <!-- APP -->
+      <div class="app-section">
+        <div>
+          <h3><i class="fas fa-mobile-alt"></i> Leve a PIB NSR com você!</h3>
+          <p>Baixe nosso aplicativo e acompanhe cultos, eventos, notícias e muito mais.</p>
+        </div>
+        <div class="app-buttons">
+          <a href="#" class="app-btn"><i class="fab fa-apple"></i> App Store</a>
+          <a href="#" class="app-btn"><i class="fab fa-google-play"></i> Google Play</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h5><i class="fas fa-sitemap"></i> Navegação</h5>
+          <ul>
+            <li><a href="index.html"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="sobre.html"><i class="fas fa-info-circle"></i> Sobre</a></li>
+            <li><a href="ministerios.html"><i class="fas fa-church"></i> Ministérios</a></li>
+            <li><a href="mensagens.html"><i class="fas fa-bible"></i> Mensagens</a></li>
+            <li><a href="agenda.html"><i class="fas fa-calendar-alt"></i> Agenda</a></li>
+            <li><a href="contato.html"><i class="fas fa-envelope"></i> Contato</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5><i class="fas fa-tasks"></i> Programações</h5>
+          <ul>
+            <li><a href="#"><i class="fas fa-pray"></i> Cultos</a></li>
+            <li><a href="#"><i class="fas fa-book-open"></i> EBD</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> Encontros</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h5><i class="fas fa-address-card"></i> Contato</h5>
+          <ul>
+            <li><i class="fas fa-phone-alt"></i> (45) 3253-2056</li>
+            <li><i class="fas fa-envelope"></i> contato@pibnsr.com.br</li>
+            <li><i class="fas fa-map-pin"></i> Av. Tucunduva, 1234</li>
+            <li><i class="fas fa-city"></i> Nova Santa Rosa - PR</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span><i class="fas fa-cross"></i> Primeira Igreja Batista em Nova Santa Rosa</span>
+        <span><i class="far fa-copyright"></i> PIB NSR 2025</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Supabase (login/admin) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <script src="js/script.js"></script>
+  <script>
+    (function() {
+      // Menu toggle para mobile
+      const menuToggle = document.getElementById('menuToggle');
+      const navLinks = document.querySelector('.nav-links');
+      
+      if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+          navLinks.classList.toggle('open');
+          this.querySelector('i').classList.toggle('fa-bars');
+          this.querySelector('i').classList.toggle('fa-times');
+        });
+      }
+
+      // Atualiza o link do menu: Login -> Painel Admin / e-mail (se logado)
+      const authLink = document.getElementById('authLink');
+      const authLinkText = document.getElementById('authLinkText');
+      getCurrentUser().then(async (user) => {
+        if (!user) {
+          authLink.href = 'login.html';
+          authLinkText.textContent = 'Login';
+          return;
+        }
+        const admin = await isAdmin(user);
+        authLink.href = admin ? 'admin.html' : 'index.html';
+        authLinkText.textContent = admin ? 'Painel Admin' : user.email;
+      });
+
+      function getNextDay(dayOfWeek) {
+        const today = new Date();
+        const currentDay = today.getDay();
+        let daysToAdd = dayOfWeek - currentDay;
+        if (daysToAdd <= 0) daysToAdd += 7;
+        const nextDate = new Date(today);
+        nextDate.setDate(today.getDate() + daysToAdd);
+        return nextDate;
+      }
+
+      const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+      const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+
+      // Eventos padrão, usados caso o Firestore ainda não tenha dados
+      // (ou o Supabase ainda não tenha sido configurado em supabase-config.js)
+      const defaultEvents = [
+        { 
+          day: 0, 
+          name: 'Domingo', 
+          items: [
+            { name: 'EBD', time: '9h00' },
+            { name: 'Culto de Celebração', time: '10h00' }
+          ],
+          icon: 'fa-church'
+        },
+        { day: 3, name: 'Culto de Oração', time: '19h30', icon: 'fa-pray' },
+        { day: 4, name: 'Juniores', time: '18h00', icon: 'fa-child' },
+        { day: 5, name: 'Adolescentes', time: '19h30', icon: 'fa-users' },
+        { day: 6, name: 'Jovens', time: '19h30', icon: 'fa-user-graduate' }
+      ];
+
+      async function loadEvents() {
+        try {
+          const { data, error } = await supabase
+            .from('agenda_events')
+            .select('*')
+            .order('sort_order', { ascending: true });
+          if (!error && data && data.length) {
+            return data;
+          }
+        } catch (err) {
+          console.warn('Não foi possível carregar eventos do Supabase, usando padrão.', err);
+        }
+        return defaultEvents;
+      }
+
+      function generateEvents(events) {
+        const eventGrid = document.getElementById('eventGrid');
+        eventGrid.innerHTML = '';
+
+        events.forEach((event) => {
+          const nextDate = getNextDay(event.day);
+          const monthName = monthNames[nextDate.getMonth()];
+          const dayNumber = nextDate.getDate();
+
+          const card = document.createElement('div');
+          card.className = 'event-card';
+
+          let content = `
+            <div class="event-date">${dayNumber} <small>${monthName}</small></div>
+          `;
+
+          if (event.items) {
+            content += `
+              <h4><i class="fas ${event.icon}"></i> ${event.name}</h4>
+              <div class="event-items">
+            `;
+            event.items.forEach(item => {
+              content += `
+                <div class="event-item">
+                  <span class="event-item-name">${item.name}</span>
+                  <span class="event-item-time">${item.time}</span>
+                </div>
+              `;
+            });
+            content += `</div>`;
+          } else {
+            content += `
+              <h4><i class="fas ${event.icon}"></i> ${event.name}</h4>
+              <div class="event-meta">
+                <i class="fas fa-calendar-day"></i> 
+                ${dayNames[event.day]} • ${event.time}
+              </div>
+            `;
+          }
+
+          content += `<a href="#" class="arrow"><i class="fas fa-chevron-right"></i> Detalhes</a>`;
+          card.innerHTML = content;
+          eventGrid.appendChild(card);
+        });
+      }
+
+      loadEvents().then(generateEvents);
+    })();
+  </script>
+</body>
+</html>

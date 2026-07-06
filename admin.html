@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+  <title>Painel Admin - PIB NSR</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="container">
+      <div class="logo-area">
+        <a href="index.html"><img src="img/logo.png" alt="PIB NSR logo" class="logo-img"></a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html"><i class="fas fa-home"></i> <span>Início</span></a>
+        <a href="admin-users.html"><i class="fas fa-user-shield"></i> <span>Admins</span></a>
+        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> <span>Sair</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <h2 class="section-title"><i class="fas fa-calendar-check"></i> Editar agenda / eventos</h2>
+      <p id="welcomeMsg" class="auth-hint"></p>
+
+      <div id="eventEditorList" class="admin-event-list"><!-- gerado via JS --></div>
+
+      <button id="addEventBtn" class="auth-btn add-event-btn"><i class="fas fa-plus"></i> Adicionar evento</button>
+
+      <div class="admin-actions">
+        <button id="saveBtn" class="auth-btn"><i class="fas fa-save"></i> Salvar alterações</button>
+        <span id="saveMsg" class="auth-message"></span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Template de um card de edição (clonado via JS) -->
+  <template id="eventTemplate">
+    <div class="admin-event-card">
+      <button class="remove-event-btn" title="Remover"><i class="fas fa-trash"></i></button>
+
+      <label>Dia da semana</label>
+      <select class="ev-day">
+        <option value="0">Domingo</option>
+        <option value="1">Segunda</option>
+        <option value="2">Terça</option>
+        <option value="3">Quarta</option>
+        <option value="4">Quinta</option>
+        <option value="5">Sexta</option>
+        <option value="6">Sábado</option>
+      </select>
+
+      <label>Nome do evento</label>
+      <input type="text" class="ev-name" placeholder="Ex: Culto de Oração">
+
+      <label>Ícone (Font Awesome, ex: fa-church)</label>
+      <input type="text" class="ev-icon" placeholder="fa-church">
+
+      <label>Horário(s) — separados por vírgula. Ex: "EBD 9h00, Culto 10h00"</label>
+      <input type="text" class="ev-items" placeholder="19h30">
+    </div>
+  </template>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <span><i class="fas fa-cross"></i> Primeira Igreja Batista em Nova Santa Rosa</span>
+        <span><i class="far fa-copyright"></i> PIB NSR 2025</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script>
+    const listEl = document.getElementById('eventEditorList');
+    const template = document.getElementById('eventTemplate');
+    const saveMsg = document.getElementById('saveMsg');
+
+    let currentUser = null;
+
+    protectPage({ requireAdmin: true }).then(async (user) => {
+      currentUser = user;
+      document.getElementById('welcomeMsg').textContent = `Logado como ${user.email} (administrador)`;
+      await loadEvents();
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    });
+
+    function createEventCard(data = {}) {
+      const clone = template.content.cloneNode(true);
+      const card = clone.querySelector('.admin-event-card');
+
+      card.dataset.id = data.id ?? '';
+      card.querySelector('.ev-day').value = data.day ?? 0;
+      card.querySelector('.ev-name').value = data.name ?? '';
+      card.querySelector('.ev-icon').value = data.icon ?? 'fa-church';
+      // items pode ser array de {name, time} ou um único time
+      let itemsText = '';
+      if (data.items && Array.isArray(data.items)) {
+        itemsText = data.items.map(i => `${i.name} ${i.time}`).join(', ');
+      } else if (data.time) {
+        itemsText = data.time;
+      }
+      card.querySelector('.ev-items').value = itemsText;
+
+      card.querySelector('.remove-event-btn').addEventListener('click', async () => {
+        if (card.dataset.id) {
+          if (!confirm('Remover este evento definitivamente?')) return;
+          await supabase.from('agenda_events').delete().eq('id', card.dataset.id);
+        }
+        card.remove();
+      });
+
+      listEl.appendChild(card);
+    }
+
+    document.getElementById('addEventBtn').addEventListener('click', () => {
+      createEventCard();
+    });
+
+    async function loadEvents() {
+      listEl.innerHTML = '';
+      const { data, error } = await supabase
+        .from('agenda_events')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (error) {
+        console.error(error);
+        saveMsg.textContent = 'Erro ao carregar eventos.';
+        saveMsg.className = 'auth-message error';
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        createEventCard({ day: 0, name: 'Culto de Celebração', icon: 'fa-church', items: [{ name: 'EBD', time: '9h00' }, { name: 'Culto', time: '10h00' }] });
+        return;
+      }
+      data.forEach(ev => createEventCard(ev));
+    }
+
+    function parseItemsText(text) {
+      // "EBD 9h00, Culto 10h00" -> [{name:'EBD', time:'9h00'}, {name:'Culto', time:'10h00'}]
+      // "19h30" (sem nome) -> time simples
+      const parts = text.split(',').map(p => p.trim()).filter(Boolean);
+      if (parts.length === 0) return { time: '' };
+
+      const items = parts.map(part => {
+        const match = part.match(/^(.*)\s+(\S+)$/);
+        if (match) {
+          return { name: match[1].trim(), time: match[2].trim() };
+        }
+        return { name: '', time: part };
+      });
+
+      // Se só tem 1 item sem nome, trata como horário único (evento simples)
+      if (items.length === 1 && !items[0].name) {
+        return { time: items[0].time };
+      }
+      return { items };
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      saveMsg.textContent = 'Salvando...';
+      saveMsg.className = 'auth-message';
+
+      const cards = listEl.querySelectorAll('.admin-event-card');
+      const rows = Array.from(cards).map((card, index) => {
+        const day = parseInt(card.querySelector('.ev-day').value, 10);
+        const name = card.querySelector('.ev-name').value.trim();
+        const icon = card.querySelector('.ev-icon').value.trim() || 'fa-church';
+        const itemsText = card.querySelector('.ev-items').value.trim();
+        const parsed = parseItemsText(itemsText);
+        const row = {
+          day, name, icon,
+          time: parsed.time ?? null,
+          items: parsed.items ?? null,
+          sort_order: index,
+          updated_by: currentUser.email
+        };
+        if (card.dataset.id) row.id = Number(card.dataset.id);
+        return row;
+      });
+
+      try {
+        const { error } = await supabase.from('agenda_events').upsert(rows);
+        if (error) throw error;
+        saveMsg.textContent = 'Salvo com sucesso!';
+        saveMsg.className = 'auth-message success';
+        await loadEvents(); // recarrega pra pegar IDs novos
+      } catch (err) {
+        console.error(err);
+        saveMsg.textContent = 'Erro ao salvar. Tente novamente.';
+        saveMsg.className = 'auth-message error';
+      }
+    });
+  </script>
+</body>
+</html>
