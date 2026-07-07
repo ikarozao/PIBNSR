@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
   <title>PIB NSR</title>
+  <link rel="icon" href="img/logo.png" type="image/png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -18,9 +19,9 @@
         <a href="index.html" class="active"><i class="fas fa-home"></i> <span>Início</span></a>
         <a href="sobre.html"><i class="fas fa-info-circle"></i> <span>Sobre</span></a>
         <a href="contato.html"><i class="fas fa-envelope"></i> <span>Contato</span></a>
-        <a href="login.html" id="authLink"><i class="fas fa-user"></i> <span id="authLinkText">Login</span></a>
+        <a href="#eventos"><i class="fas fa-calendar-alt"></i> <span>Agenda</span></a>
       </nav>
-      <!-- Menu hamburger para mobile (opcional) -->
+      <!-- Menu hamburger para mobile -->
       <button class="menu-toggle" id="menuToggle" aria-label="Menu">
         <i class="fas fa-bars"></i>
       </button>
@@ -50,7 +51,7 @@
 
     <div class="container">
       <!-- PRÓXIMOS EVENTOS -->
-      <h2 class="section-title"><i class="fas fa-calendar-check"></i> Próximos eventos</h2>
+      <h2 class="section-title" id="eventos"><i class="fas fa-calendar-check"></i> Próximos eventos</h2>
       <div class="event-grid" id="eventGrid">
         <!-- Gerado dinamicamente pelo JavaScript -->
       </div>
@@ -89,16 +90,8 @@
             <li><a href="sobre.html"><i class="fas fa-info-circle"></i> Sobre</a></li>
             <li><a href="ministerios.html"><i class="fas fa-church"></i> Ministérios</a></li>
             <li><a href="mensagens.html"><i class="fas fa-bible"></i> Mensagens</a></li>
-            <li><a href="agenda.html"><i class="fas fa-calendar-alt"></i> Agenda</a></li>
+            <li><a href="#eventos"><i class="fas fa-calendar-alt"></i> Agenda</a></li>
             <li><a href="contato.html"><i class="fas fa-envelope"></i> Contato</a></li>
-          </ul>
-        </div>
-        <div>
-          <h5><i class="fas fa-tasks"></i> Programações</h5>
-          <ul>
-            <li><a href="#"><i class="fas fa-pray"></i> Cultos</a></li>
-            <li><a href="#"><i class="fas fa-book-open"></i> EBD</a></li>
-            <li><a href="#"><i class="fas fa-users"></i> Encontros</a></li>
           </ul>
         </div>
         <div class="footer-contact">
@@ -118,10 +111,6 @@
     </div>
   </footer>
 
-  <!-- Supabase (login/admin) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-
   <script src="js/script.js"></script>
   <script>
     (function() {
@@ -137,20 +126,6 @@
         });
       }
 
-      // Atualiza o link do menu: Login -> Painel Admin / e-mail (se logado)
-      const authLink = document.getElementById('authLink');
-      const authLinkText = document.getElementById('authLinkText');
-      getCurrentUser().then(async (user) => {
-        if (!user) {
-          authLink.href = 'login.html';
-          authLinkText.textContent = 'Login';
-          return;
-        }
-        const admin = await isAdmin(user);
-        authLink.href = admin ? 'admin.html' : 'index.html';
-        authLinkText.textContent = admin ? 'Painel Admin' : user.email;
-      });
-
       function getNextDay(dayOfWeek) {
         const today = new Date();
         const currentDay = today.getDay();
@@ -164,8 +139,7 @@
       const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
       const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
-      // Eventos padrão, usados caso o Firestore ainda não tenha dados
-      // (ou o Supabase ainda não tenha sido configurado em supabase-config.js)
+      // Eventos estáticos
       const defaultEvents = [
         { 
           day: 0, 
@@ -181,21 +155,6 @@
         { day: 5, name: 'Adolescentes', time: '19h30', icon: 'fa-users' },
         { day: 6, name: 'Jovens', time: '19h30', icon: 'fa-user-graduate' }
       ];
-
-      async function loadEvents() {
-        try {
-          const { data, error } = await supabase
-            .from('agenda_events')
-            .select('*')
-            .order('sort_order', { ascending: true });
-          if (!error && data && data.length) {
-            return data;
-          }
-        } catch (err) {
-          console.warn('Não foi possível carregar eventos do Supabase, usando padrão.', err);
-        }
-        return defaultEvents;
-      }
 
       function generateEvents(events) {
         const eventGrid = document.getElementById('eventGrid');
@@ -243,7 +202,20 @@
         });
       }
 
-      loadEvents().then(generateEvents);
+      generateEvents(defaultEvents);
+
+      // Smooth scroll para links âncora
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
     })();
   </script>
 </body>
