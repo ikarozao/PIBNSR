@@ -21,7 +21,6 @@
         <a href="contato.html"><i class="fas fa-envelope"></i> <span>Contato</span></a>
         <a href="#eventos"><i class="fas fa-calendar-alt"></i> <span>Agenda</span></a>
       </nav>
-      <!-- Menu hamburger para mobile -->
       <button class="menu-toggle" id="menuToggle" aria-label="Menu">
         <i class="fas fa-bars"></i>
       </button>
@@ -32,7 +31,7 @@
     <!-- CARROSSEL -->
     <section class="hero-carousel" id="heroCarousel">
       <div class="carousel-track" id="carouselTrack">
-        <div class="carousel-slide" style="background-image: url('img/domingo.jpg');"></div>
+        <div class="carousel-slide" style="background-image: url('img/primeira.png');"></div>
         <div class="carousel-slide" style="background-image: url('img/juniores.png');"></div>
         <div class="carousel-slide" style="background-image: url('img/adoles.png');"></div>
         <div class="carousel-slide" style="background-image: url('img/jovens.png');"></div>
@@ -73,7 +72,7 @@
         </div>
         <div class="app-buttons">
           <a href="#" class="app-btn"><i class="fab fa-apple"></i> App Store</a>
-          <a href="#" class="app-btn"><i class="fab fa-google-play"></i> Google Play</a>
+          <a href="https://play.google.com/store/apps/details?id=br.com.sistemaprover.pibnsr" target="_blank" class="app-btn"><i class="fab fa-google-play"></i> Google Play</a>
         </div>
       </div>
     </div>
@@ -97,10 +96,10 @@
         <div class="footer-contact">
           <h5><i class="fas fa-address-card"></i> Contato</h5>
           <ul>
-            <li><i class="fas fa-phone-alt"></i> (45) 3253-2056</li>
+            <li><i class="fas fa-phone-alt"></i> <a href="https://wa.me/554598563944?text=Ol%C3%A1.%20Vim%20do%20Site%20da%20PIB%20NSR!" target="_blank" style="color: #5f4a3b; text-decoration: none;">(45) 9856-3944</a></li>
             <li><i class="fas fa-envelope"></i> contato@pibnsr.com.br</li>
-            <li><i class="fas fa-map-pin"></i> Av. Tucunduva, 1234</li>
-            <li><i class="fas fa-city"></i> Nova Santa Rosa - PR</li>
+            <li><i class="fas fa-map-pin"></i> <a href="https://www.google.com/maps/search/?api=1&query=Av.+Horizontina,+711+Nova+Santa+Rosa+PR" target="_blank" style="color: #5f4a3b; text-decoration: none;">Av. Horizontina, 711 - Centro</a></li>
+            <li><i class="fas fa-city"></i> <a href="https://www.google.com/maps/search/?api=1&query=Nova+Santa+Rosa+PR" target="_blank" style="color: #5f4a3b; text-decoration: none;">Nova Santa Rosa - PR</a></li>
           </ul>
         </div>
       </div>
@@ -139,28 +138,66 @@
       const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
       const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
-      // Eventos estáticos
+      // Eventos com detalhes expandidos
       const defaultEvents = [
         { 
           day: 0, 
           name: 'Domingo', 
-          items: [
-            { name: 'EBD', time: '9h00' },
-            { name: 'Culto de Celebração', time: '10h00' }
-          ],
-          icon: 'fa-church'
+          icon: 'fa-church',
+          details: `
+            <div class="detail-item">
+              <strong>EBD:</strong> Salas Pré-definidas
+              <br>Início: 9h | Fim: 9:50
+            </div>
+            <div class="detail-item">
+              <strong>Culto:</strong> Local: Templo
+              <br>Início: 10h | Fim: 11:30
+            </div>
+          `
         },
-        { day: 3, name: 'Culto de Oração', time: '19h30', icon: 'fa-pray' },
-        { day: 4, name: 'Juniores', time: '18h00', icon: 'fa-child' },
-        { day: 5, name: 'Adolescentes', time: '19h30', icon: 'fa-users' },
-        { day: 6, name: 'Jovens', time: '19h30', icon: 'fa-user-graduate' }
+        { 
+          day: 4, 
+          name: 'Juniores', 
+          time: '18h00', 
+          icon: 'fa-child',
+          details: `
+            <div class="detail-item">
+              <strong>Local:</strong> Sala Link
+              <br>Início: 18h | Fim: 20:30
+            </div>
+          `
+        },
+        { 
+          day: 5, 
+          name: 'Adolescentes', 
+          time: '19h30', 
+          icon: 'fa-users',
+          details: `
+            <div class="detail-item">
+              <strong>Local:</strong> Sala Link
+              <br>Início: 19:30 | Fim: 22:30
+            </div>
+          `
+        },
+        { 
+          day: 6, 
+          name: 'Jovens', 
+          time: '19h30', 
+          icon: 'fa-user-graduate',
+          details: `
+            <div class="detail-item">
+              <strong>Local:</strong> Sala Link
+              <br>Início: 19:30 | Fim: 22:30
+            </div>
+          `
+        }
       ];
 
       function generateEvents(events) {
         const eventGrid = document.getElementById('eventGrid');
         eventGrid.innerHTML = '';
 
-        events.forEach((event) => {
+        events.forEach((event, index) => {
           const nextDate = getNextDay(event.day);
           const monthName = monthNames[nextDate.getMonth()];
           const dayNumber = nextDate.getDate();
@@ -170,35 +207,41 @@
 
           let content = `
             <div class="event-date">${dayNumber} <small>${monthName}</small></div>
+            <h4><i class="fas ${event.icon}"></i> ${event.name}</h4>
+            <div class="event-meta">
+              <i class="fas fa-calendar-day"></i> 
+              ${dayNames[event.day]} • ${event.time || ''}
+            </div>
+            <div class="event-details" id="details-${index}" style="display: none;">
+              ${event.details}
+            </div>
+            <a href="#" class="arrow toggle-details" data-index="${index}">
+              <i class="fas fa-chevron-right"></i> Detalhes
+            </a>
           `;
 
-          if (event.items) {
-            content += `
-              <h4><i class="fas ${event.icon}"></i> ${event.name}</h4>
-              <div class="event-items">
-            `;
-            event.items.forEach(item => {
-              content += `
-                <div class="event-item">
-                  <span class="event-item-name">${item.name}</span>
-                  <span class="event-item-time">${item.time}</span>
-                </div>
-              `;
-            });
-            content += `</div>`;
-          } else {
-            content += `
-              <h4><i class="fas ${event.icon}"></i> ${event.name}</h4>
-              <div class="event-meta">
-                <i class="fas fa-calendar-day"></i> 
-                ${dayNames[event.day]} • ${event.time}
-              </div>
-            `;
-          }
-
-          content += `<a href="#" class="arrow"><i class="fas fa-chevron-right"></i> Detalhes</a>`;
           card.innerHTML = content;
           eventGrid.appendChild(card);
+        });
+
+        // Adiciona evento de toggle para os detalhes
+        document.querySelectorAll('.toggle-details').forEach(link => {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const index = this.dataset.index;
+            const details = document.getElementById(`details-${index}`);
+            const icon = this.querySelector('i');
+            
+            if (details.style.display === 'none') {
+              details.style.display = 'block';
+              icon.className = 'fas fa-chevron-down';
+              this.innerHTML = '<i class="fas fa-chevron-down"></i> Ocultar detalhes';
+            } else {
+              details.style.display = 'none';
+              icon.className = 'fas fa-chevron-right';
+              this.innerHTML = '<i class="fas fa-chevron-right"></i> Detalhes';
+            }
+          });
         });
       }
 
@@ -218,5 +261,56 @@
       });
     })();
   </script>
+
+  <style>
+    /* Estilos adicionais para os detalhes */
+    .event-details {
+      margin: 8px 0 6px;
+      padding: 10px 12px;
+      background: #f5efe8;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      color: #4a372b;
+      line-height: 1.6;
+    }
+
+    .detail-item {
+      margin-bottom: 6px;
+    }
+
+    .detail-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-item strong {
+      color: #5a3f32;
+    }
+
+    .event-card .arrow {
+      margin-top: 6px;
+      color: #b48b72;
+      font-weight: 500;
+      font-size: 0.8rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .event-card .arrow:hover {
+      color: #5a3f32;
+      gap: 8px;
+    }
+
+    /* Ajustes para mobile */
+    @media (max-width: 768px) {
+      .event-details {
+        font-size: 0.75rem;
+        padding: 8px 10px;
+      }
+    }
+  </style>
 </body>
 </html>
